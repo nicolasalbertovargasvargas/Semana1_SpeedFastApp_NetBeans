@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3"
+         xmlns:jaxrpc="http://www.netbeans.org/ns/j2se-project/jax-rpc"
+         basedir=".."
+         default="default"
+         name="SpeedFastApp-impl">
+    <property file="nbproject/private/config.properties"/>
+    <property file="nbproject/private/${config}.properties"/>
+    <property file="nbproject/project.properties"/>
+
+    <target name="default" depends="test,jar,javadoc" description="Build and test whole project."/>
+    <target name="-pre-init"/>
+    <target name="-init-private" depends="-pre-init">
+        <property file="nbproject/private/private.properties"/>
+    </target>
+    <target name="-init-user" depends="-pre-init,-init-private">
+        <property file="${user.home}/.netbeans/7.0/build.properties"/>
+    </target>
+    <target name="-init-project" depends="-pre-init,-init-private,-init-user">
+        <property file="nbproject/project.properties"/>
+    </target>
+    <target name="-do-init" depends="-pre-init,-init-private,-init-user,-init-project,-init-macrodef-property">
+        <j2seproject3:property name="platform.home" value="platforms.${platform.active}.home"/>
+        <j2seproject3:property name="platform.bootcp" value="platforms.${platform.active}.bootclasspath"/>
+        <j2seproject3:property name="platform.compiler" value="platforms.${platform.active}.compile"/>
+        <j2seproject3:property name="platform.javac.tmp" value="platforms.${platform.active}.javac"/>
+        <condition property="platform.javac" value="${platform.javac.tmp}" else="javac">
+            <isset property="platform.javac.tmp"/>
+        </condition>
+        <j2seproject3:property name="platform.java.tmp" value="platforms.${platform.active}.java"/>
+        <condition property="platform.java" value="${platform.java.tmp}" else="java">
+            <isset property="platform.java.tmp"/>
+        </condition>
+    </target>
+    <target name="-post-init"/>
+    <target name="-init-macrodef-property">
+        <macrodef name="property" uri="http://www.netbeans.org/ns/j2se-project/3">
+            <attribute name="name"/>
+            <attribute name="value"/>
+            <sequential>
+                <property name="@{name}" value="${@{value}}"/>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init" depends="-pre-init,-init-private,-init-user,-init-project,-do-init,-post-init,-init-macrodef-property"/>
+    <target name="clean" depends="init" description="Clean build products.">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+    <target name="-do-compile">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${build.classes.dir}"
+               source="${javac.source}" target="${javac.target}"
+               classpath="${javac.classpath}" encoding="${source.encoding}"
+               debug="true" includeantruntime="false"/>
+    </target>
+    <target name="compile" depends="init,-do-compile" description="Compile sources."/>
+    <target name="jar" depends="compile" description="Package into JAR.">
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.jar}" basedir="${build.classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="run" depends="compile" description="Run the project.">
+        <java classname="${main.class}" classpath="${run.classpath}" fork="true"/>
+    </target>
+    <target name="test" depends="compile" description="Run tests (none defined)."/>
+    <target name="javadoc" depends="init" description="Generate Javadoc.">
+        <mkdir dir="${dist.javadoc.dir}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${dist.javadoc.dir}"
+                 encoding="${source.encoding}" windowtitle="SpeedFastApp API"/>
+    </target>
+</project>
