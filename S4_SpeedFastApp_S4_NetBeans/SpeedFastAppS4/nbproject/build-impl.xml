@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:j2seproject3="http://www.netbeans.org/ns/j2se-project/3"
+         basedir=".."
+         default="default"
+         name="SpeedFastApp-impl">
+    <fail message="Please build using Ant 1.9.5 or higher.">
+        <condition>
+            <not>
+                <antversion atleast="1.9.5"/>
+            </not>
+        </condition>
+    </fail>
+
+    <target depends="jar" description="Build whole project." name="default"/>
+
+    <target name="-pre-init">
+        <property file="nbproject/private/config.properties"/>
+        <property file="nbproject/private/private.properties"/>
+        <property file="nbproject/project.properties"/>
+    </target>
+
+    <target depends="-pre-init" name="-init-private">
+        <mkdir dir="nbproject/private"/>
+        <touch file="nbproject/private/private.properties"/>
+    </target>
+
+    <target depends="-pre-init,-init-private" name="-init-user"/>
+
+    <target depends="-pre-init,-init-private,-init-user" name="-init-project">
+        <property file="nbproject/project.properties"/>
+    </target>
+
+    <target depends="-pre-init,-init-private,-init-user,-init-project,-init-macrodef-property" name="-do-init"/>
+
+    <target depends="-pre-init,-init-private,-init-user,-init-project,-do-init" name="-post-init"/>
+
+    <target depends="-pre-init,-init-private,-init-user,-init-project,-do-init,-post-init" name="init"/>
+
+    <target name="-init-macrodef-property">
+        <macrodef name="property" uri="http://www.netbeans.org/ns/j2se-project/1">
+            <attribute name="name"/>
+            <attribute name="value"/>
+            <sequential>
+                <property name="@{name}" value="${@{value}}"/>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target depends="init" name="-init-macrodef-javac">
+        <macrodef name="javac" uri="http://www.netbeans.org/ns/j2se-project/3">
+            <attribute default="${src.dir}" name="srcdir"/>
+            <attribute default="${build.classes.dir}" name="destdir"/>
+            <attribute default="${javac.classpath}" name="classpath"/>
+            <attribute default="${includes}" name="includes"/>
+            <attribute default="${excludes}" name="excludes"/>
+            <attribute default="${javac.debug}" name="debug"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <javac debug="@{debug}"
+                       deprecation="${javac.deprecation}"
+                       destdir="@{destdir}"
+                       encoding="${source.encoding}"
+                       excludes="@{excludes}"
+                       includeantruntime="false"
+                       includes="@{includes}"
+                       source="${javac.source}"
+                       srcdir="@{srcdir}"
+                       target="${javac.target}">
+                    <classpath>
+                        <path path="@{classpath}"/>
+                    </classpath>
+                    <customize/>
+                </javac>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target depends="init" name="-init-macrodef-java">
+        <macrodef name="java" uri="http://www.netbeans.org/ns/j2se-project/3">
+            <attribute default="${main.class}" name="classname"/>
+            <element name="customize" optional="true"/>
+            <sequential>
+                <java classname="@{classname}"
+                      dir="${basedir}"
+                      failonerror="false"
+                      fork="true">
+                    <jvmarg line="${run.jvmargs}"/>
+                    <classpath>
+                        <path path="${run.classpath}"/>
+                    </classpath>
+                    <syspropertyset>
+                        <propertyref prefix="run-sys-prop."/>
+                        <mapper from="run-sys-prop.*" to="*" type="glob"/>
+                    </syspropertyset>
+                    <customize/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target depends="init" name="deps-jar" unless="no.deps"/>
+
+    <target depends="init,deps-jar" name="-pre-pre-compile">
+        <mkdir dir="${build.classes.dir}"/>
+    </target>
+
+    <target name="-pre-compile"/>
+
+    <target name="-compile-depend"/>
+
+    <target depends="init,deps-jar,-pre-pre-compile,-pre-compile,-compile-depend,-init-macrodef-javac" name="-do-compile">
+        <j2seproject3:javac/>
+        <copy todir="${build.classes.dir}">
+            <fileset dir="${src.dir}" excludes="${build.classes.excludes},${excludes}" includes="${includes}">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="-post-compile"/>
+
+    <target depends="init,deps-jar,-pre-pre-compile,-pre-compile,-compile-depend,-do-compile,-post-compile" description="Compile project." name="compile"/>
+
+    <target depends="init" name="-pre-pre-jar">
+        <dirname file="${dist.jar}" property="dist.jar.dir"/>
+        <mkdir dir="${dist.jar.dir}"/>
+    </target>
+
+    <target name="-pre-jar"/>
+
+    <target depends="init,compile,-pre-pre-jar,-pre-jar" name="-do-jar-create">
+        <jar compress="${jar.compress}" destfile="${dist.jar}">
+            <fileset dir="${build.classes.dir}"/>
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="-post-jar"/>
+
+    <target depends="init,compile,-pre-pre-jar,-pre-jar,-do-jar-create,-post-jar" description="Build JAR." name="jar"/>
+
+    <target depends="init,compile,-init-macrodef-java" name="-do-run">
+        <j2seproject3:java/>
+    </target>
+
+    <target depends="init,compile,-do-run" description="Run a main class." name="run"/>
+
+    <target depends="init,compile,-do-run" description="Debug a main class." name="debug"/>
+
+    <target name="test" description="No tests configured for this project."/>
+
+    <target name="javadoc" description="No javadoc configured for this project."/>
+
+    <target depends="init" name="-do-clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+    </target>
+
+    <target name="-post-clean"/>
+
+    <target depends="init,-do-clean,-post-clean" description="Clean build products." name="clean"/>
+</project>
